@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   rxdart: ^0.23.1
   observable: ^0.22.2
+  provider: 3.2.0
 
   # https://pub.dartlang.org/packages/meta
   meta: 1.1.8

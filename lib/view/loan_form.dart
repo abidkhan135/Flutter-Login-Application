@@ -5,150 +5,223 @@ class LoanForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  BodyWidget(),
+      body: BodyWidget(),
     );
   }
 }
+
 class BodyWidget extends StatefulWidget {
   @override
   _BodyWidgetState createState() => _BodyWidgetState();
 }
 
 class _BodyWidgetState extends State<BodyWidget> {
+  var _isLoading = false;
+  final _lastnameFocusNode = FocusNode();
+  final _eamilFocusNode = FocusNode();
+  final _loanFocusNode = FocusNode();
 
-  final firstnameController= TextEditingController();
-  final lastnameController= TextEditingController();
-  final emailController= TextEditingController();
-  final passController= TextEditingController();
+  final _firstnameController = TextEditingController();
+  final _lastnameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _loanController = TextEditingController();
 
-  final loginViewModel= LoginViewModel();
+  final loanViewModel = LoanViewModel();
 
   @override
   void initState() {
     super.initState();
 
-    firstnameController.addListener(() {
-      loginViewModel.firstnameSink.add(firstnameController.text);
+    _firstnameController.addListener(() {
+      loanViewModel.firstnameSink.add(_firstnameController.text);
     });
-    lastnameController.addListener(() {
-      loginViewModel.lastnameSink.add(lastnameController.text);
-    });
-
-    emailController.addListener(() {
-      loginViewModel.emailSink.add(emailController.text);
+    _lastnameController.addListener(() {
+      loanViewModel.lastnameSink.add(_lastnameController.text);
     });
 
-    passController.addListener(() {
-      loginViewModel.passSink.add(passController.text);
+    _emailController.addListener(() {
+      loanViewModel.emailSink.add(_emailController.text);
     });
 
-
+    _loanController.addListener(() {
+      loanViewModel.loanSink.add(_loanController.text);
+    });
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    loginViewModel.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
+    _emailController.dispose();
+    _loanController.dispose();
+    _lastnameFocusNode.dispose();
+    _eamilFocusNode.dispose();
+    _loanFocusNode.dispose();
+    loanViewModel.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 40,right: 40),
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      padding: new EdgeInsets.symmetric(horizontal: 40,vertical: 30),
+      child: Center(
+        child: ListView(
           children: <Widget>[
-
             StreamBuilder<String>(
-                stream: loginViewModel.firstnameStream,
+                stream: loanViewModel.firstnameStream,
                 builder: (context, snapshot) {
                   return TextFormField(
-                    controller: firstnameController,
+                    controller: _firstnameController,
                     decoration: InputDecoration(
-                        icon: Icon(Icons.email),
-                        hintText: 'firstname',
+                        icon: Icon(Icons.person_outline),
+                        hintText: 'first name',
                         labelText: 'First name',
-                        errorText: snapshot.data
-                    ),
+                        errorText: snapshot.data),
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_lastnameFocusNode);
+                    },
                   );
-                }
+                }),
+            SizedBox(
+              height: 20,
             ),
-            SizedBox(height: 20,),
             StreamBuilder<String>(
-                stream: loginViewModel.lastnameStream,
+                stream: loanViewModel.lastnameStream,
                 builder: (context, snapshot) {
                   return TextFormField(
-                    controller: lastnameController,
+                    controller: _lastnameController,
                     decoration: InputDecoration(
-                        icon: Icon(Icons.email),
-                        hintText: 'last',
+                        icon: Icon(Icons.person_outline),
+                        hintText: 'last name',
                         labelText: 'Last name',
-                        errorText: snapshot.data
-                    ),
+                        errorText: snapshot.data),
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_eamilFocusNode);
+                    },
+                    focusNode: _lastnameFocusNode,
                   );
-                }
+                }),
+            SizedBox(
+              height: 20,
             ),
-            SizedBox(height: 20,),
             StreamBuilder<String>(
-                stream: loginViewModel.emailStream,
+                stream: loanViewModel.emailStream,
                 builder: (context, snapshot) {
                   return TextFormField(
-                    controller: emailController,
+                    controller: _emailController,
                     decoration: InputDecoration(
                         icon: Icon(Icons.email),
                         hintText: 'abcs@gmail.com',
                         labelText: 'Email@',
-                        errorText: snapshot.data
-                    ),
+                        errorText: snapshot.data),
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_loanFocusNode);
+                    },
+                    focusNode: _eamilFocusNode,
                   );
-                }
+                }),
+            SizedBox(
+              height: 20,
             ),
-            SizedBox(height: 20,),
             StreamBuilder<String>(
-                stream: loginViewModel.passStream,
+                stream: loanViewModel.loanStream,
                 builder: (context, snapshot) {
                   return TextFormField(
-                    controller: passController,
-                    obscureText: true,
+                    controller: _loanController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        labelText: 'Password*',
-                        errorText: snapshot.data
-                    ),
+                        icon: Icon(Icons.attach_money),
+                        labelText: 'Loan Amount',
+                        errorText: snapshot.data),
+                    textInputAction: TextInputAction.done,
+                    focusNode: _loanFocusNode,
                   );
-                }
-            ),
-            SizedBox(height: 20,),
+                }),
             SizedBox(
-              width: 200,
-              height: 45,
+              height: 40,
+            ),
+            SizedBox(
+              width: 80,
+              height: 50,
               child: StreamBuilder<bool>(
-                  stream: loginViewModel.btnStream,
+                  stream: loanViewModel.btnStream,
                   builder: (context, snapshot) {
-                    return RaisedButton(
-                      color: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      onPressed: snapshot.data==true ? (){
-                        //call login APi
-                        print("Button is pressed");
-                      }:null ,
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                        ),
-                      ),
-                    );
-                  }
-              ),
+                    return _isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : RaisedButton(
+                            color: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            onPressed: snapshot.data == true
+                                ? () {
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
+                                    loanViewModel.submitApplication().then((_) {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Success!'),
+                                            content: const Text(
+                                                'This application is added to system.'),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: Text('Ok'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }).catchError((onError) {
+                                      var exceptionType =
+                                          onError.toString().split(':');
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      return showDialog<Null>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: Text(exceptionType[0]),
+                                          content: Text(exceptionType[1]),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: Text('OK'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    });
+                                  }
+                                : null,
+                            child: Text(
+                              "Submit",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                              ),
+                            ),
+                          );
+                  }),
             )
           ],
         ),
+      ),
     );
   }
 }
-
- 

@@ -7,10 +7,6 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
- /* final List<Map<String,Object>> _pages=[
-    {'page':LoanForm(),'title':'Loan Form'},
-    {'page':ListApplications(),'title':'Submitted Applications'},
-  ];*/
   final List<Widget> _pages=[
     LoanForm(),
    ListApplications(),
